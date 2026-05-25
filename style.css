@@ -1,0 +1,74 @@
+/*
+  style.css
+  Tailwind CSS で補いきれない部分だけをここに書く。
+  基本のデザインはほぼ index.html のクラス名（Tailwind）で完結している。
+*/
+
+/* ===== モーダルの背景幕 ===== */
+/*
+  モーダルを開いたとき、後ろのコンテンツを暗くする半透明の幕。
+  Tailwind だけでは透明度付きの backdrop を表現しにくいのでここに書く。
+*/
+.modal-backdrop {
+  position: fixed;       /* 画面全体に固定表示 */
+  inset: 0;              /* 上下左右すべて 0 → 画面全体を覆う */
+  background-color: rgba(0, 0, 0, 0.6); /* 黒60%透明の幕 */
+  z-index: 0;            /* モーダル本体より後ろに置く */
+}
+
+/* ===== 絵文字ボタンの基本スタイル ===== */
+.mood-btn {
+  font-size: 1.75rem;    /* 絵文字を少し大きめに */
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 2px solid transparent; /* 普段は透明な枠線（選択時に色をつける） */
+  background-color: #334155;     /* slate-700 相当の暗いグレー */
+  cursor: pointer;       /* マウスを乗せると指カーソルに変わる */
+  transition: transform 0.1s, border-color 0.1s; /* 押したときのアニメーション */
+  line-height: 1;        /* 絵文字の上下に余計な余白が出ないように */
+}
+
+.mood-btn:hover {
+  transform: scale(1.15); /* マウスを乗せると少し拡大 */
+}
+
+/* 選択中の絵文字ボタン（JavaScriptがこのクラスを付け外しする） */
+.mood-btn.selected {
+  border-color: #3b82f6; /* 青色の枠線 */
+  background-color: #1e3a5f; /* 少し青みがかった背景 */
+  transform: scale(1.15);
+}
+
+/* ===== 日記カードのスタイル ===== */
+/*
+  基本は Tailwind クラスで書いているが、
+  hover 時のカードを少し浮き上がらせるアニメーションだけここに定義する。
+*/
+.diary-card {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.diary-card:hover {
+  transform: translateY(-3px); /* 上方向に3px浮く */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== モーダルが開くときのふわっとしたアニメーション ===== */
+/*
+  Tailwind の hidden / flex 切り替えに合わせて
+  モーダルがふわっと現れるようにする。
+*/
+#modal-overlay:not(.hidden) .modal-content {
+  animation: modal-in 0.2s ease-out;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

@@ -261,7 +261,8 @@ $(function () {
 
   // ----- 絵文字ボタンのクリック -----
   // .mood-btn は複数あるが、jQuery は全部にまとめてイベントを設定できる
-  $(document).on('click', '.mood-btn', function () {
+  // HTMLに最初から存在する静的な要素なので、document委譲は不要
+  $('.mood-btn').on('click', function () {
     const mood = $(this).data('mood');
     // $(this)：クリックされたその要素自身を指す
     // .data('mood')：data-mood 属性の値を取り出す

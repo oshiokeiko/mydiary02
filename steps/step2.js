@@ -74,12 +74,12 @@ $(function () {
     // いまの保存ずみ日記を読み込む
     const diaries = loadDiaries();
 
-    // 新しい日記（オブジェクト）を作って配列の最後に足す
+    // 新しい日記（オブジェクト）を作って配列の先頭に足す（新しいものが上に出る）
     const newDiary = {
       title: title,
       body: body
     };
-    diaries.push(newDiary);
+    diaries.unshift(newDiary);
 
     // ★足したあとの配列を保存場所に書き込む（ここがSTEP1との違い）
     saveDiaries(diaries);

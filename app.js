@@ -63,12 +63,8 @@ function showList() {
   }
   $('#empty-message').addClass('hidden');
 
-  // 新しい順に並べる（id は作った時刻の数字なので、大きいほど新しい）
-  diaries.sort(function (a, b) {
-    return b.id - a.id;
-  });
-
   // 1件ずつカードにして並べる
+  // ※追加のとき unshift で配列の先頭に足しているので、ここで並べ替えなくても自然と新しい順になる
   $.each(diaries, function (index, diary) {
     const cardHtml = `
       <div class="diary-card bg-slate-800 rounded-xl p-5 border border-slate-700">
@@ -146,7 +142,8 @@ $(function () {
       body: body,
       createdAt: new Date().toISOString() // 作った日時（日付表示に使う）
     };
-    diaries.push(newDiary);
+    // unshift で配列の先頭に足す → 新しい日記が一覧の一番上に出る
+    diaries.unshift(newDiary);
 
     saveDiaries(diaries);
 

@@ -26,6 +26,7 @@ function showList() {
 
     // 日記1件分のカードのHTMLを文字で組み立てる。
     // ${ } の中に、その日記のタイトルや本文を差し込む。
+    //escapeHtml は、記号を「見た目は同じだけど、命令と勘違いされない別の書き方」に置きかるもの。
     const cardHtml = `
       <div class="diary-card bg-slate-800 rounded-xl p-5 border border-slate-700">
         <h3 class="text-lg font-bold mb-2">${escapeHtml(diary.title)}</h3>
@@ -67,8 +68,10 @@ $(function () {
       body: body
     };
 
-    // 【配列に追加】push は「配列の最後に1件足す」命令。
-    diaries.push(newDiary);
+    // 【配列に追加】unshift は「配列の先頭に1件足す」命令。
+    // 先頭に足すので、新しい日記が一覧の一番上に表示される。
+    // （反対に push を使うと「最後に足す」ので、新しいものが下に出る）
+    diaries.unshift(newDiary);
 
     // 入力欄を空にする（次の日記を書きやすいように）
     $('#input-title').val('');

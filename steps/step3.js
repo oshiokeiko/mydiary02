@@ -106,7 +106,8 @@ $(function () {
       title: title,
       body: body
     };
-    diaries.push(newDiary);
+    // unshift で配列の先頭に足す → 新しい日記が一覧の一番上に出る
+    diaries.unshift(newDiary);
 
     saveDiaries(diaries);
 

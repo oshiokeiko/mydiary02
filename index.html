@@ -6,163 +6,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Diary</title>
 
-  <!-- Tailwind CSS：外部ライブラリの読み込み（CDN） -->
+  <!-- Tailwind CSS（見た目を整える外部ライブラリ） -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- 自分で書いたカスタムCSS（Tailwindで補えない部分だけ） -->
+  <!-- 自前のCSS（Tailwindで補えない部分だけ） -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-slate-900 text-white min-h-screen">
-  <!-- body全体の背景色をZenn風の紺色（bg-slate-900）、文字を白に設定 -->
 
   <!-- ===== ヘッダー ===== -->
-  <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
-    <!-- sticky top-0：スクロールしてもヘッダーが画面上部に固定される -->
-    <!-- z-10：他の要素より手前に表示される（モーダルに隠れないように） -->
-    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-      <!-- max-w-4xl mx-auto：コンテンツを中央寄せで最大幅を設定 -->
-      <!-- flex items-center justify-between：左右に要素を振り分けて縦中央揃え -->
-      <h1 class="text-2xl font-bold text-white">📔 My Diary</h1>
-      <button
-        id="open-modal-btn"
-        class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-      >
-        <!-- hover:bg-blue-500：マウスを乗せたとき少し明るい青になる -->
-        <!-- transition-colors：色の変化をなめらかにする -->
-        日記を書く
-      </button>
+  <header class="bg-slate-800 border-b border-slate-700">
+    <div class="max-w-2xl mx-auto px-4 py-4">
+      <h1 class="text-2xl font-bold">📔 My Diary</h1>
     </div>
   </header>
 
-  <!-- ===== メインコンテンツ：日記一覧エリア ===== -->
-  <main class="max-w-4xl mx-auto px-4 py-8">
+  <main class="max-w-2xl mx-auto px-4 py-8">
 
-    <!-- 日記がゼロのときだけ表示する案内メッセージ -->
-    <div id="empty-message" class="text-center text-slate-400 py-20 hidden">
-      <p class="text-6xl mb-4">📭</p>
-      <p class="text-lg">まだ日記がありません。<br>「日記を書く」ボタンから最初の一言を残しましょう。</p>
+    <!-- ===== 入力フォーム（いつも画面に出しっぱなし）===== -->
+    <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 mb-8">
+
+      <!-- タイトル -->
+      <input
+        id="input-title"
+        type="text"
+        placeholder="タイトル"
+        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-3 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+      >
+
+      <!-- 気分の絵文字えらび -->
+      <p class="text-sm text-slate-300 mb-2">今日の気分</p>
+      <div id="mood-selector" class="flex gap-2 flex-wrap mb-3">
+        <!-- data-mood に絵文字を持たせておき、JavaScript から読み取る -->
+        <button class="mood-btn" data-mood="😊">😊</button>
+        <button class="mood-btn" data-mood="😢">😢</button>
+        <button class="mood-btn" data-mood="😡">😡</button>
+        <button class="mood-btn" data-mood="😴">😴</button>
+        <button class="mood-btn" data-mood="🥰">🥰</button>
+        <button class="mood-btn" data-mood="🤔">🤔</button>
+      </div>
+
+      <!-- 本文 -->
+      <textarea
+        id="input-body"
+        rows="4"
+        placeholder="今日はどんな日でしたか..."
+        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-3 placeholder-slate-400 focus:outline-none focus:border-blue-500 resize-none"
+      ></textarea>
+
+      <!-- 追加ボタン -->
+      <button
+        id="add-btn"
+        class="bg-blue-600 hover:bg-blue-500 font-bold py-2 px-5 rounded-lg transition-colors"
+      >追加する</button>
     </div>
 
-    <!-- 日記カードを並べるグリッドコンテナ -->
-    <!-- grid：格子状に並べる。スマホは1列、PC（768px以上）は2列 -->
-    <div id="diary-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- カードはJavaScript（app.js）がここに動的に追加する -->
+    <!-- 日記が0件のときに出す案内 -->
+    <div id="empty-message" class="text-center text-slate-400 py-16 hidden">
+      <p class="text-5xl mb-3">📭</p>
+      <p>まだ日記がありません。上のフォームから書いてみましょう。</p>
     </div>
+
+    <!-- ===== 日記の一覧（ここに JavaScript がカードを並べる）===== -->
+    <div id="diary-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
   </main>
 
-  <!-- ===== モーダル（新規作成・編集 共通）===== -->
-  <!--
-    モーダル＝画面の上に重なって表示されるポップアップウィンドウ。
-    最初は hidden クラスで非表示にしておき、
-    ボタンが押されたときにJavaScriptで hidden を外して表示する。
-  -->
-  <div id="modal-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-    <!-- fixed inset-0：画面全体を覆う固定表示 -->
-    <!-- z-50：最前面に表示（ヘッダーのz-10より上） -->
-    <!-- flex items-center justify-center：モーダル本体を画面中央に配置 -->
-
-    <!-- 背景の半透明の幕（クリックでモーダルを閉じる） -->
-    <div id="modal-backdrop" class="modal-backdrop"></div>
-    <!-- スタイルは style.css で定義 -->
-
-    <!-- モーダルの本体 -->
-    <div class="modal-content bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg z-10 relative">
-      <!-- max-w-lg：モーダルの最大幅を制限 -->
-      <!-- z-10 relative：背景幕より手前に表示 -->
-
-      <!-- モーダルのタイトル行 -->
-      <div class="flex items-center justify-between p-6 border-b border-slate-700">
-        <h2 id="modal-title" class="text-xl font-bold">日記を書く</h2>
-        <!-- ×ボタン（右上の閉じるボタン） -->
-        <button id="modal-close-btn" class="text-slate-400 hover:text-white text-2xl leading-none transition-colors">
-          &times;
-          <!-- &times; は × 記号のHTMLコード -->
-        </button>
-      </div>
-
-      <!-- モーダルの入力フォーム -->
-      <div class="p-6 space-y-5">
-        <!-- space-y-5：子要素の間に縦方向の余白を自動で追加 -->
-
-        <!-- タイトル入力欄 -->
-        <div>
-          <label for="input-title" class="block text-sm font-medium text-slate-300 mb-1">
-            タイトル
-          </label>
-          <!-- label の for="input-title" と input の id="input-title" を対応させる（アクセシビリティ対応） -->
-          <input
-            id="input-title"
-            type="text"
-            placeholder="今日のタイトルを入力..."
-            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-          >
-          <!-- focus:border-blue-500：クリックして入力中のとき枠線が青くなる -->
-        </div>
-
-        <!-- 気分セレクター -->
-        <div>
-          <label class="block text-sm font-medium text-slate-300 mb-2">
-            気分
-          </label>
-          <!-- 絵文字ボタンを横並びにするコンテナ -->
-          <div id="mood-selector" class="flex gap-2 flex-wrap">
-            <!-- flex gap-2：横並びで間隔を均等にあける -->
-            <!-- flex-wrap：画面が狭いときは折り返す -->
-
-            <!-- 絵文字ボタン×7種。data-mood属性に絵文字を持たせておく -->
-            <!-- data-*属性＝ HTMLタグに好きな情報を埋め込める仕組み。JavaScriptから読み取れる -->
-            <button class="mood-btn" data-mood="😊">😊</button>
-            <button class="mood-btn" data-mood="😢">😢</button>
-            <button class="mood-btn" data-mood="😡">😡</button>
-            <button class="mood-btn" data-mood="😴">😴</button>
-            <button class="mood-btn" data-mood="🥰">🥰</button>
-            <button class="mood-btn" data-mood="😤">😤</button>
-            <button class="mood-btn" data-mood="🤔">🤔</button>
-          </div>
-        </div>
-
-        <!-- 本文入力エリア -->
-        <div>
-          <label for="input-body" class="block text-sm font-medium text-slate-300 mb-1">
-            本文
-          </label>
-          <textarea
-            id="input-body"
-            rows="6"
-            placeholder="今日はどんな日でしたか..."
-            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 resize-none"
-          ></textarea>
-          <!-- resize-none：テキストエリアの角をドラッグしてサイズ変更できないようにする -->
-        </div>
-      </div>
-
-      <!-- モーダルの下部ボタン行 -->
-      <div class="flex justify-end gap-3 px-6 pb-6">
-        <button
-          id="cancel-btn"
-          class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-5 rounded-lg transition-colors"
-        >
-          キャンセル
-        </button>
-        <button
-          id="save-btn"
-          class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-5 rounded-lg transition-colors"
-        >
-          保存する
-        </button>
-      </div>
-
-    </div><!-- /modal-content -->
-  </div><!-- /modal-overlay -->
-
-  <!-- ===== JavaScriptの読み込み ===== -->
-  <!-- jQuery：$() と書くだけでHTML要素を簡単に操作できるライブラリ -->
+  <!-- jQuery（$ という書き方が使えるようになる） -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-  <!-- 自分で書いたロジック（jQueryを使うので、必ずjQueryの後に読み込む） -->
+  <!-- 自前のロジック（jQueryの後に読み込む） -->
   <script src="app.js"></script>
 
 </body>
+
 </html>

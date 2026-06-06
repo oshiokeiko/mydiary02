@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STEP2：ローカル保存</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen">
+
+  <main class="max-w-2xl mx-auto px-4 py-8">
+
+    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-8 text-sm text-slate-300">
+      <p class="font-bold text-white mb-1">📘 STEP2：ローカル保存を足す</p>
+      <p>STEP1に「保存」を追加します。書いた日記がブラウザに残り、</p>
+      <p class="text-green-400">※リロードしても・閉じても消えません。</p>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-6">📔 My Diary</h1>
+
+    <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 mb-8">
+      <input
+        id="input-title"
+        type="text"
+        placeholder="タイトル"
+        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-3 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+      >
+      <textarea
+        id="input-body"
+        rows="4"
+        placeholder="今日はどんな日でしたか..."
+        class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-3 placeholder-slate-400 focus:outline-none focus:border-blue-500 resize-none"
+      ></textarea>
+      <button
+        id="add-btn"
+        class="bg-blue-600 hover:bg-blue-500 font-bold py-2 px-5 rounded-lg transition-colors"
+      >追加する</button>
+    </div>
+
+    <div id="diary-list" class="grid grid-cols-1 gap-4"></div>
+
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="step2.js"></script>
+
+</body>
+
+</html>
